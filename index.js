@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const process = require("process");
 
-function productionLoader() {
+function oldProductionLoader() {
   const dirname = process.env['__TOOLBOX_DIRNAME__'];
   const filename = path.basename(this.resourcePath);
   const filepath = path.join(dirname, filename);
@@ -31,7 +31,22 @@ try {
 `;
 }
 
+function productionLoader() {
+  console.log('--------- productionLoader() ');
+  console.log(`this.resourcePath: ${this.resourcePath}`);
+  return (
+    `try {global.process.dlopen(module, ${JSON.stringify(
+      this.resourcePath
+    )}); } catch(e) {` +
+    `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
+      this.resourcePath
+    )} + ': ' + e);}`
+  );
+}
+
 function developmentLoader() {
+  console.log('--------- developmentLoader() ');
+  console.log(`this.resourcePath: ${this.resourcePath}`);
   return (
     `try {global.process.dlopen(module, ${JSON.stringify(
       this.resourcePath
