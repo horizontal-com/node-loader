@@ -5,14 +5,19 @@
 
 const fs = require("fs");
 const path = require("path");
+const process = require("process");
 
-module.exports = function nodeLoader() {
+function productionLoader() {
+  const dirname = process.env['__TOOLBOX_DIRNAME__'];
   const filename = path.basename(this.resourcePath);
+  const filepath = path.join(dirname, filename);
   console.log(`this.resourcePath: ${this.resourcePath}`);
   console.log(`filename: ${filename}`);
+  console.log(`filepath: ${filepath}`);
   const src = fs.readFileSync(this.resourcePath, {encoding: "binary"});
-  const script = `
-const nodeFilename = ${JSON.stringify(filename)};
+  
+  return `
+const nodeFilename = ${JSON.stringify(filepath)};
 const src = ${JSON.stringify(src)};
 require("fs").writeFileSync(nodeFilename, src, "binary");
 try {
@@ -24,17 +29,21 @@ try {
   throw new Error('node-loader: Cannot open ' + nodeFilename + ': ' + e);
 }
 `;
+}
 
-  return script;
-};
+function developmentLoader() {
+  return (
+    `try {global.process.dlopen(module, ${JSON.stringify(
+      this.resourcePath
+    )}); } catch(e) {` +
+    `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
+      this.resourcePath
+    )} + ': ' + e);}`
+  );
+}
 
-// module.exports = function nodeLoader() {
-//   return (
-//     `try {global.process.dlopen(module, ${JSON.stringify(
-//       this.resourcePath
-//     )}); } catch(e) {` +
-//     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
-//       this.resourcePath
-//     )} + ': ' + e);}`
-//   );
-// };
+if (process.env['__TOOLBOX_MODE__'] && process.env['__TOOLBOX_MODE__'] === 'production') {
+  module.exports = productionLoader;
+} else {
+  module.exports = developmentLoader;
+}
