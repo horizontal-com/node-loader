@@ -8,6 +8,8 @@ const path = require("path");
 
 module.exports = function nodeLoader() {
   const filename = path.basename(this.resourcePath);
+  console.log(`this.resourcePath: ${this.resourcePath}`);
+  console.log(`filename: ${filename}`);
   const src = fs.readFileSync(this.resourcePath, {encoding: "binary"});
   const script = `
 const nodeFilename = ${JSON.stringify(filename)};
@@ -23,7 +25,6 @@ try {
 }
 `;
 
-  console.log(script);
   return script;
 };
 
