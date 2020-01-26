@@ -57,8 +57,15 @@ function developmentLoader() {
   );
 }
 
-if (process.env['__TOOLBOX_MODE__'] && process.env['__TOOLBOX_MODE__'] === 'production') {
-  module.exports = productionLoader;
-} else {
-  module.exports = developmentLoader;
+function loader() {
+  console.log('--------- loader() ');
+  console.log(JSON.stringify(process.env, null, 4));
+  if (process.env['__TOOLBOX_MODE__'] && process.env['__TOOLBOX_MODE__'] === 'production') {
+    productionLoader();
+  } else {
+    developmentLoader();
+  }
 }
+
+module.exports = loader;
+
