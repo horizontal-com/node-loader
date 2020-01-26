@@ -52,24 +52,24 @@ const process = require("process");
 // }
 
 module.exports = function nodeLoader() {
-  const filepath = this.resourcePath;
-  const jsonFilepath = JSON.stringify(filepath);
 
   console.log('--------- nodeLoader() ');
   console.log(`__dirname: ${__dirname}`);
-  console.log(`filepath: ${filepath}`);
-  console.log(`jsonFilepath: ${jsonFilepath}`);
-
+  
   const code =
     `
     const process = require('process');
+    const jsonFilepath = JSON.stringify(this.resourcePath);
+
     console.log('----------- loader()');
     console.log(JSON.stringify(process.env, null, 4));
-    console.log('jsonFilepath: ${jsonFilepath}');
+    console.log(jsonFilepath);
+
     try {
-      global.process.dlopen(module, '${jsonFilepath}');
+      global.process.dlopen(module, jsonFilepath);
     } catch(e) {
-      console.log('Error opening ${jsonFilepath}');
+      console.log('Error opening file ...');
+      console.log(jsonFilepath);
       console.log(e);
       throw new Error(e);
     }
