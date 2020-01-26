@@ -7,65 +7,40 @@ const fs = require("fs");
 const path = require("path");
 const process = require("process");
 
-function oldProductionLoader() {
-  const dirname = process.env['__TOOLBOX_DIRNAME__'];
-  const filename = path.basename(this.resourcePath);
-  const filepath = path.join(dirname, filename);
-  console.log(`this.resourcePath: ${this.resourcePath}`);
-  console.log(`filename: ${filename}`);
-  console.log(`filepath: ${filepath}`);
-  const src = fs.readFileSync(this.resourcePath, {encoding: "binary"});
-  
-  return `
-const nodeFilename = ${JSON.stringify(filepath)};
-const src = ${JSON.stringify(src)};
-require("fs").writeFileSync(nodeFilename, src, "binary");
-try {
-  global.process.dlopen(
-    module,
-    nodeFilename
-  );
-} catch(e) {
-  throw new Error('node-loader: Cannot open ' + nodeFilename + ': ' + e);
-}
-`;
-}
-
-function productionLoader() {
+function productionLoader(filepath) {
   console.log('--------- productionLoader() ');
-  console.log(`this.resourcePath: ${this.resourcePath}`);
   return (
     `try {global.process.dlopen(module, ${JSON.stringify(
-      this.resourcePath
+      filepath
     )}); } catch(e) {` +
     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
-      this.resourcePath
+      filepath
     )} + ': ' + e);}`
   );
 }
 
-function developmentLoader() {
+function developmentLoader(filepath) {
   console.log('--------- developmentLoader() ');
-  console.log(`this.resourcePath: ${this.resourcePath}`);
   return (
     `try {global.process.dlopen(module, ${JSON.stringify(
-      this.resourcePath
+      filepath
     )}); } catch(e) {` +
     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
-      this.resourcePath
+      filepath
     )} + ': ' + e);}`
   );
 }
 
-function loader() {
-  console.log('--------- loader() ');
+module.exports = function nodeLoader() {
+  const filepath = this.resourcePath;
+  console.log('--------- nodeLoader() ');
+  console.log(`__dirname: ${__dirname}`);
+  console.log(`filepath: ${filepath}`);
   console.log(JSON.stringify(process.env, null, 4));
   if (process.env['__TOOLBOX_MODE__'] && process.env['__TOOLBOX_MODE__'] === 'production') {
-    productionLoader();
+    return productionLoader(filepath);
   } else {
-    developmentLoader();
+    return developmentLoader(filepath);
   }
 }
-
-module.exports = loader;
 
