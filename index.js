@@ -62,7 +62,7 @@ module.exports = function nodeLoader() {
       global.process.dlopen(module, filepath);
     } catch(e) {
       console.log('Error opening file ...');
-      console.log(jsonFilepath);
+      console.log(filepath);
       console.log(e);
       throw new Error(e);
     }
