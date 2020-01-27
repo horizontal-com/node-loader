@@ -52,16 +52,14 @@ module.exports = function nodeLoader() {
   const code =
     `
     const process = require('process');
-    const filepath = '${filepath}';
-    const jsonFilepath = JSON.stringify(filepath);
+    const filepath = '"${filepath}"';
 
     console.log('----------- loader()');
     console.log(filepath);
-    console.log(jsonFilepath);
     console.log(JSON.stringify(process.env, null, 4));
 
     try {
-      global.process.dlopen(module, jsonFilepath);
+      global.process.dlopen(module, filepath);
     } catch(e) {
       console.log('Error opening file ...');
       console.log(jsonFilepath);
