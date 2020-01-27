@@ -100,7 +100,7 @@ module.exports = function nodeLoader() {
     console.log('----------- resourcePath:');
     console.log(resourcePath);
 
-    resourcePath = '"' + resourcePath + '"';
+    // resourcePath = '"' + resourcePath + '"';
 
     console.log('----------- resourcePath:');
     console.log(resourcePath);
