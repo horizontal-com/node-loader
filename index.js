@@ -87,6 +87,7 @@ module.exports = function nodeLoader() {
     const process = require('process');
     const path = require('path');
     const resourcePath = '${this.resourcePath}';
+
     console.log('----------- resourcePath:');
     console.log(resourcePath);
 
@@ -99,10 +100,15 @@ module.exports = function nodeLoader() {
     console.log('----------- resourcePath:');
     console.log(resourcePath);
 
+    resourcePath = '"' + resourcePath + '"';
+
+    console.log('----------- resourcePath:');
+    console.log(resourcePath);
+
     console.log(JSON.stringify(process.env, null, 4));
 
     try {
-      global.process.dlopen(module, JSON.stringify(resourcePath)); 
+      global.process.dlopen(module, resourcePath); 
     } catch(e) {
       console.log('Error opening file ...');
       console.log(resourcePath);
