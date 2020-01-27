@@ -70,5 +70,15 @@ module.exports = function nodeLoader() {
 
   console.log(JSON.stringify(process.env, null, 4));
   console.log(code);
-  return code;
+  // return code;
+
+
+  return (
+    `try {global.process.dlopen(module, ${JSON.stringify(
+      this.resourcePath
+    )}); } catch(e) {` +
+    `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
+      this.resourcePath
+    )} + ': ' + e);}`
+  );
 }
