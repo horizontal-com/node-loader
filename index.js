@@ -1,53 +1,32 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
+const process = require('process');
+const path = require('path');
 
-// const fs = require("fs");
-// const path = require("path");
-const process = require("process");
+// module.exports = function nodeLoader() {
 
-// function productionLoader(filepath) {
-//   console.log('--------- productionLoader() ');
-//   return (
-//     `try {global.process.dlopen(module, ${JSON.stringify(
-//       filepath
-//     )}); } catch(e) {` +
-//     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
-//       filepath
-//     )} + ': ' + e);}`
-//   );
-// }
-
-// function developmentLoader(filepath) {
-//   console.log('--------- developmentLoader() ');
-//   return (
-//     `try {global.process.dlopen(module, ${JSON.stringify(
-//       filepath
-//     )}); } catch(e) {` +
-//     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
-//       filepath
-//     )} + ': ' + e);}`
-//   );
-// }
-
-// function getCode(filepath) {
-//   const jsonFilepath = JSON.stringify(filepath);
+//   console.log('--------- nodeLoader() ');
+//   console.log(`__dirname: ${__dirname}`);
+  
 //   const code =
 //     `
-//     const process = require("process");
+//     const process = require('process');
+//     const jsonFilepath = JSON.stringify(this.resourcePath);
+
 //     console.log('----------- loader()');
 //     console.log(JSON.stringify(process.env, null, 4));
-//     console.log('jsonFilepath: ${jsonFilepath}');
+//     console.log(jsonFilepath);
+
 //     try {
-//       global.process.dlopen(module, '${jsonFilepath}');
+//       global.process.dlopen(module, jsonFilepath);
 //     } catch(e) {
-//       console.log('Error opening ${jsonFilepath}');
+//       console.log('Error opening file ...');
+//       console.log(jsonFilepath);
 //       console.log(e);
 //       throw new Error(e);
 //     }
 //     `;
 
+//   console.log(JSON.stringify(process.env, null, 4));
+//   console.log(code);
 //   return code;
 // }
 
@@ -55,15 +34,31 @@ module.exports = function nodeLoader() {
 
   console.log('--------- nodeLoader() ');
   console.log(`__dirname: ${__dirname}`);
-  
+
+  let filepath = this.resourcePath;
+
+  if (path.basename(filepath) === 'pty.node') {
+    if (process.env['__TOOLBOX_MODE__']) {
+      if (process.env['__TOOLBOX_MODE__'] == 'production') {
+        filepath = process.env['__TOOLBOX_DIRNAME__'];
+        filepath = path.join(filepath, '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
+      }
+    }
+  }
+
+  console.log(`this.resourcePath: ${this.resourcePath}`);
+  console.log(`filepath: ${filepath}`);
+
   const code =
     `
     const process = require('process');
-    const jsonFilepath = JSON.stringify(this.resourcePath);
+    const filepath = '${filepath}';
+    const jsonFilepath = JSON.stringify(filepath);
 
     console.log('----------- loader()');
-    console.log(JSON.stringify(process.env, null, 4));
+    console.log(filepath);
     console.log(jsonFilepath);
+    console.log(JSON.stringify(process.env, null, 4));
 
     try {
       global.process.dlopen(module, jsonFilepath);
@@ -79,4 +74,3 @@ module.exports = function nodeLoader() {
   console.log(code);
   return code;
 }
-
