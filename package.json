@@ -1,6 +1,6 @@
 {
   "name": "node-loader",
-  "version": "10.0.12",
+  "version": "10.0.13",
   "description": "A Node loader module for enhanced-require",
   "license": "MIT",
   "repository": "webpack-contrib/node-loader",
