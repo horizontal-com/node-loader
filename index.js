@@ -30,18 +30,36 @@ const path = require('path');
 //   return code;
 // }
 
+// module.exports = function nodeLoader() {
+
+//   console.log(`this.resourcePath: ${this.resourcePath}`);
+  
+//   if (path.basename(this.resourcePath) === 'pty.node') {
+//     if (process.env['__TOOLBOX_MODE__']) {
+//       if (process.env['__TOOLBOX_MODE__'] == 'production') {
+//         this.resourcePath = path.join(process.env['__TOOLBOX_DIRNAME__'], '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
+//       }
+//     }
+//   }
+
+//   console.log(`this.resourcePath: ${this.resourcePath}`);
+
+//   return (
+//     `try {global.process.dlopen(module, ${JSON.stringify(
+//       this.resourcePath
+//     )}); } catch(e) {` +
+//     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
+//       this.resourcePath
+//     )} + ': ' + e);}`
+//   );
+// }
+
 module.exports = function nodeLoader() {
 
   console.log(`this.resourcePath: ${this.resourcePath}`);
-  
-  if (path.basename(this.resourcePath) === 'pty.node') {
-    if (process.env['__TOOLBOX_MODE__']) {
-      if (process.env['__TOOLBOX_MODE__'] == 'production') {
-        this.resourcePath = path.join(process.env['__TOOLBOX_DIRNAME__'], '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
-      }
-    }
+  if (this.resourcePath.includes('.build')) {
+    this.resourcePath = path.join(process.env['__TOOLBOX_DIRNAME__'], '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
   }
-
   console.log(`this.resourcePath: ${this.resourcePath}`);
 
   return (
