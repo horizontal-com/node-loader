@@ -56,14 +56,23 @@ const path = require('path');
 
 module.exports = function nodeLoader() {
 
-  console.log(`this.resourcePath: ${this.resourcePath}`);
-  if (this.resourcePath.includes('.build')) {
-    this.resourcePath = path.join(process.env['__TOOLBOX_DIRNAME__'], '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
-  }
-  console.log(`this.resourcePath: ${this.resourcePath}`);
+  // console.log(`this.resourcePath: ${this.resourcePath}`);
+  // if (this.resourcePath.includes('.build')) {
+  //   this.resourcePath = path.join(process.env['__TOOLBOX_DIRNAME__'], '..', 'app.asar.unpacked', 'node_modules', 'node-pty', 'build', 'Release', 'pty.node');
+  // }
+  // console.log(`this.resourcePath: ${this.resourcePath}`);
 
+
+  // Let's see what things look like when the code runs.
   return (
-    `try {global.process.dlopen(module, ${JSON.stringify(
+    `const process = require('process');
+     const path = require('path');
+     const resourcePath = '${this.resourcePath}';
+     console.log('----------- resourcePath:');
+     console.log(resourcePath);
+     console.log(JSON.stringify(process.env, null, 4));
+
+    try {global.process.dlopen(module, ${JSON.stringify(
       this.resourcePath
     )}); } catch(e) {` +
     `throw new Error('node-loader: Cannot open ' + ${JSON.stringify(
