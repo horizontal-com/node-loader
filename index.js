@@ -86,7 +86,7 @@ module.exports = function nodeLoader() {
   const code = `
     const process = require('process');
     const path = require('path');
-    const resourcePath = '${this.resourcePath}';
+    let resourcePath = '${this.resourcePath}';
 
     console.log('----------- resourcePath:');
     console.log(resourcePath);
