@@ -1,9 +1,11 @@
+const process = require('process');
+
 module.exports = function nodeLoader() {
 
   console.log('------------- early');
   console.log(this.resourcePath);
 
-  const code = `
+  let code = `
     const process = require('process');
     const path = require('path');
     let resourcePath = '${this.resourcePath}';
@@ -26,6 +28,10 @@ module.exports = function nodeLoader() {
       throw new Error(e);
     }
   `;
+
+  if (process.platform === 'win32') {
+    code = code.replace(/\n/g, /\r\n/);
+  }
 
   return code;
 }
