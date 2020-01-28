@@ -24,13 +24,12 @@ module.exports = function nodeLoader() {
     } catch(e) {
       console.log('Error opening file ...');
       console.log(resourcePath);
-      console.log(e);
       throw new Error(e);
     }
   `;
 
   if (process.platform === 'win32') {
-    code = code.replace(/\n/g, /\r\n/);
+    code = code.replace('\n', '\r\n');
   }
 
   return code;
